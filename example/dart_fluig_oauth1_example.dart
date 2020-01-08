@@ -2,13 +2,13 @@ import 'package:fluig_oauth1/fluig_oauth1.dart';
 
 void main() {
 
-  String url = "https://clientes.totvsrp.com.br/";
+  String url = "<url>";
 
-  const String apiKey = '03c78ad081738a6228e0cf2b2fd9f3350db380c3';
-  const String apiSecret = '03c78ad081738a6228e0cf2b2fd9f3350db380c303c78ad081738a6228e0cf2b2fd9f3350db380c3';
+  const String apiKey = '<token>';
+  const String apiSecret = '<token_secret>';
   var clientCredentials = ClientCredentials(apiKey, apiSecret);
 
-  var user = User("admin_escandinavia","Admin@123");
+  var user = User("<user>","<pass>");
 
   var fluigConnect = FluigConnect(url,clientCredentials,user);
 

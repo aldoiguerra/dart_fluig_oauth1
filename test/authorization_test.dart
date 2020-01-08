@@ -28,18 +28,18 @@ void main() {
 }
 
 class TesteFluig {
-  String url = "https://clientes.totvsrp.com.br/";
+  String url = "<url>";
 
   void testarFluig() {
 
 //    print("Criando credential");
     // define client credentials (consumer keys)
-    const String apiKey = '03c78ad081738a6228e0cf2b2fd9f3350db380c3';
-    const String apiSecret = '03c78ad081738a6228e0cf2b2fd9f3350db380c303c78ad081738a6228e0cf2b2fd9f3350db380c3';
+    const String apiKey = '<token>';
+    const String apiSecret = '<token_secret>';
     var clientCredentials = oauth1.ClientCredentials(apiKey, apiSecret);
 
 //    print("Criando User");
-    var user = oauth1.User("admin_escandinavia","Admin@123");
+    var user = oauth1.User("<user>","<pass>");
 
 
     var fluigConnect = FluigConnect(url,clientCredentials,user);
