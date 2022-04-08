@@ -9,3 +9,7 @@
 ## 1.0.1
 
 - Change docs
+
+## 1.1.0
+
+- changes to null safe

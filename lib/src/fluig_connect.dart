@@ -12,7 +12,6 @@ import 'client.dart';
 import 'platform.dart';
 import 'authorization.dart';
 import 'authorization_response.dart';
-import 'authorization_header_builder.dart';
 
 /// A class describing OAuth client credentials.
 class FluigConnect {
@@ -23,9 +22,7 @@ class FluigConnect {
   final String _url;
   final http.BaseClient _httpClient;
 
-  FluigConnect(this._url, this._clientCredentials, this._user,
-      [this._credentials, http.BaseClient httpClient])
-      : _httpClient = httpClient != null ? httpClient : http.Client();
+  FluigConnect(this._url, this._clientCredentials, this._user, [this._credentials, http.BaseClient httpClient]) : _httpClient = httpClient != null ? httpClient : http.Client();
 
   Future<Client> connect() async {
 //    print("Criando plataform");
@@ -64,24 +61,18 @@ class FluigConnect {
   /// If not callbackURI passed, authentication becomes PIN-based.
   Future<int> requestAuthenticate(AuthorizationResponse res) async {
     final encoding = Encoding.getByName("utf-8");
-    final body = Uri.encodeFull("login=" +
-        _user.user +
-        "&password=" +
-        _user.password +
-        "&oauth_token=" +
-        res.credentials.token +
-        "&oauth_callback=oob");
+    final body = Uri.encodeFull("login=" + _user.user + "&password=" + _user.password + "&oauth_token=" + res.credentials.token + "&oauth_callback=oob");
 
 //    print("Requisitanto login to: " + _url + 'portal/api/rest/oauth/dologin');
 //    print("Body: " + body);
 
+    Uri dologinURI = Uri.parse(_url + 'portal/api/rest/oauth/dologin');
+
     final http.Response resLogin = await _httpClient.post(
-        _url + 'portal/api/rest/oauth/dologin',
-        headers: <String, String>{
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2'
-        },
-        body: body);
+      dologinURI,
+      headers: <String, String>{'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2'},
+      body: body,
+    );
 
 //    print('Resposta statusCode: ' + resLogin.statusCode.toString());
 //    print("Resposta body: " + resLogin.body);

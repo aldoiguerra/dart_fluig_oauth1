@@ -1,8 +1,6 @@
 library authorization_test;
 
 import 'package:fluig_oauth1/src/fluig_connect.dart';
-import 'package:test/test.dart';
-import 'package:http/http.dart' as http;
 import 'package:fluig_oauth1/fluig_oauth1.dart' as oauth1;
 
 void main() {
@@ -31,7 +29,6 @@ class TesteFluig {
   String url = "<url>";
 
   void testarFluig() {
-
 //    print("Criando credential");
     // define client credentials (consumer keys)
     const String apiKey = '<token>';
@@ -39,19 +36,21 @@ class TesteFluig {
     var clientCredentials = oauth1.ClientCredentials(apiKey, apiSecret);
 
 //    print("Criando User");
-    var user = oauth1.User("<user>","<pass>");
+    var user = oauth1.User("<user>", "<pass>");
 
+    Uri getCurrentURI = Uri.parse(url + 'api/public/2.0/users/getCurrent');
 
-    var fluigConnect = FluigConnect(url,clientCredentials,user);
+    var fluigConnect = FluigConnect(url, clientCredentials, user);
 
-    fluigConnect.connect().then((client) => {
-
-      client. get (url + 'api/public/2.0/users/getCurrent').then((res) {
-        print(res.body);
-      })
-
-    }).catchError((err) {
-      print("mostrando erro: "+err.toString());
+    fluigConnect
+        .connect()
+        .then((client) => {
+              client.get(getCurrentURI).then((res) {
+                print(res.body);
+              })
+            })
+        .catchError((err) {
+      print("mostrando erro: " + err.toString());
     });
 
 //    print("Criando Authorization");
@@ -119,8 +118,7 @@ class TesteFluigChave {
 
     // define client credentials (consumer keys)
     const String apiKey = '03c78ad081738a6228e0cf2b2fd9f3350db380c3';
-    const String apiSecret =
-        '03c78ad081738a6228e0cf2b2fd9f3350db380c303c78ad081738a6228e0cf2b2fd9f3350db380c3';
+    const String apiSecret = '03c78ad081738a6228e0cf2b2fd9f3350db380c303c78ad081738a6228e0cf2b2fd9f3350db380c3';
     final clientCredentials = new oauth1.ClientCredentials(apiKey, apiSecret);
 
 //    const String userKey = 'd140915e-9b07-4d53-be42-c42cbd85f5d1';
@@ -128,16 +126,15 @@ class TesteFluigChave {
 //        'fec93543-77d7-4635-9fb4-810d7492c89a35976754-fbd8-4809-8518-b461b98c6a3f';
 
     const String userKey = '039982af-8f30-4695-ad04-311daf28d655';
-    const String userSecret =
-        'a3edd43f-d4b7-46f4-b952-9cdf89a39a4fc66fc055-6b5b-4fe3-bef2-806384b83d8a';
+    const String userSecret = 'a3edd43f-d4b7-46f4-b952-9cdf89a39a4fc66fc055-6b5b-4fe3-bef2-806384b83d8a';
 
-    oauth1.Credentials credentials =
-        new oauth1.Credentials(userKey, userSecret);
+    oauth1.Credentials credentials = new oauth1.Credentials(userKey, userSecret);
 
-    final client = new oauth1.Client(
-        platform.signatureMethod, clientCredentials, credentials);
+    final client = new oauth1.Client(platform.signatureMethod, clientCredentials, credentials);
 
-    client.get(url + 'api/public/2.0/users/getCurrent').then((res) {
+    Uri getCurrentURI = Uri.parse(url + 'api/public/2.0/users/getCurrent');
+
+    client.get(getCurrentURI).then((res) {
       print(res.body);
     });
 
