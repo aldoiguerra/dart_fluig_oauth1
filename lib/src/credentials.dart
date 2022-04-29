@@ -4,8 +4,8 @@ import 'dart:convert';
 
 /// A class describing OAuth credentials except for client credential
 class Credentials {
-  final String _token;
-  final String _tokenSecret;
+  final String? _token;
+  final String? _tokenSecret;
 
   Credentials(this._token, this._tokenSecret);
   factory Credentials.fromMap(Map<String, String> parameters) {
@@ -22,8 +22,8 @@ class Credentials {
     return Credentials.fromMap(json.decode(jstr));
   }
 
-  String get token => _token;
-  String get tokenSecret => _tokenSecret;
+  String? get token => _token;
+  String? get tokenSecret => _tokenSecret;
 
   @override
   String toString() {

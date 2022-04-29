@@ -22,9 +22,7 @@ class Client extends http.BaseClient {
   ///
   /// If you want to use in web browser, pass http.BrowserClient object for httpClient.
   /// https://api.dartlang.org/apidocs/channels/stable/dartdoc-viewer/http/http-browser_client.BrowserClient
-  Client(this._signatureMethod, this._clientCredentials, this._credentials,
-      [http.BaseClient httpClient])
-      : _httpClient = httpClient != null ? httpClient : http.Client();
+  Client(this._signatureMethod, this._clientCredentials, this._credentials, [http.BaseClient? httpClient]) : _httpClient = httpClient != null ? httpClient : http.Client() as http.BaseClient;
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) {
@@ -37,13 +35,10 @@ class Client extends http.BaseClient {
     final Map<String, String> headers = request.headers;
     Map<String, String> additionalParameters = <String, String>{};
     if (headers.containsKey('Authorization')) {
-      additionalParameters = Uri.splitQueryString(headers['Authorization']);
+      additionalParameters = Uri.splitQueryString(headers['Authorization']!);
     }
-    if (headers.containsKey('content-type') &&
-        headers['content-type'].contains('application/x-www-form-urlencoded') &&
-        (request as http.Request).body != null) {
-      additionalParameters
-          .addAll(Uri.splitQueryString((request as http.Request).body));
+    if (headers.containsKey('content-type') && headers['content-type']!.contains('application/x-www-form-urlencoded') && (request as http.Request).body != null) {
+      additionalParameters.addAll(Uri.splitQueryString(request.body));
     }
     ahb.additionalParameters = additionalParameters;
 

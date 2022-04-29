@@ -17,12 +17,12 @@ import 'authorization_response.dart';
 class FluigConnect {
   final SignatureMethod _signatureMethod = SignatureMethods.hmacSha1;
   final ClientCredentials _clientCredentials;
-  final Credentials _credentials;
+  final Credentials? _credentials;
   final User _user;
   final String _url;
   final http.BaseClient _httpClient;
 
-  FluigConnect(this._url, this._clientCredentials, this._user, [this._credentials, http.BaseClient httpClient]) : _httpClient = httpClient != null ? httpClient : http.Client();
+  FluigConnect(this._url, this._clientCredentials, this._user, [this._credentials, http.BaseClient? httpClient]) : _httpClient = httpClient != null ? httpClient : http.Client() as http.BaseClient;
 
   Future<Client> connect() async {
 //    print("Criando plataform");
@@ -41,7 +41,7 @@ class FluigConnect {
 
 //    print("Criando Request para token com usuaário e senha");
 
-    AuthorizationResponse res = null;
+    AuthorizationResponse? res = null;
 
     res = await auth.requestTemporaryCredentials('oob');
 
@@ -61,7 +61,7 @@ class FluigConnect {
   /// If not callbackURI passed, authentication becomes PIN-based.
   Future<int> requestAuthenticate(AuthorizationResponse res) async {
     final encoding = Encoding.getByName("utf-8");
-    final body = Uri.encodeFull("login=" + _user.user + "&password=" + _user.password + "&oauth_token=" + res.credentials.token + "&oauth_callback=oob");
+    final body = Uri.encodeFull("login=" + _user.user + "&password=" + _user.password + "&oauth_token=" + res.credentials.token! + "&oauth_callback=oob");
 
 //    print("Requisitanto login to: " + _url + 'portal/api/rest/oauth/dologin');
 //    print("Body: " + body);
