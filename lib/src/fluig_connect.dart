@@ -17,15 +17,18 @@ import 'authorization_response.dart';
 class FluigConnect {
   final SignatureMethod _signatureMethod = SignatureMethods.hmacSha1;
   final ClientCredentials _clientCredentials;
-  final Credentials _credentials;
   final User _user;
   final String _url;
   final http.BaseClient _httpClient;
+  final int time_to_live = 10 * 60 * 1000;
+  Credentials? _credentials;
 
-  FluigConnect(this._url, this._clientCredentials, this._user, [this._credentials, http.BaseClient httpClient]) : _httpClient = httpClient != null ? httpClient : http.Client();
+  FluigConnect(this._url, this._clientCredentials, this._user, [this._credentials, http.BaseClient? httpClient]) : _httpClient = httpClient != null ? httpClient : http.Client() as http.BaseClient;
+
+  Credentials? get credentials => _credentials;
 
   Future<Client> connect() async {
-//    print("Criando plataform");
+    //    print("Criando plataform");
     final platform = Platform(
         _url + 'portal/api/rest/oauth/request_token',
         _url + 'portal/api/rest/oauth/authorize',
@@ -35,24 +38,39 @@ class FluigConnect {
         _signatureMethod // signature method
         );
 
-//    print("Criando Authorization");
-    // create Authorization object with client credentials and platform definition
-    var auth = Authorization(_clientCredentials, platform, _httpClient);
+    // print("Precisa gerar o token?");
 
-//    print("Criando Request para token com usuaário e senha");
+    bool gerarToken = false;
+    if (credentials == null) {
+      gerarToken = true;
+    } else {
+      final timeout = DateTime.now().millisecondsSinceEpoch - credentials!.timestamp_gerate!;
+      gerarToken = (timeout > time_to_live);
+    }
+    // print(gerarToken);
 
-    AuthorizationResponse res = null;
+    if (gerarToken) {
+      //    print("Criando Authorization");
+      // create Authorization object with client credentials and platform definition
+      var auth = Authorization(_clientCredentials, platform, _httpClient);
 
-    res = await auth.requestTemporaryCredentials('oob');
+      //    print("Criando Request para token com usuaário e senha");
 
-    final int code = await requestAuthenticate(res);
+      AuthorizationResponse? res = null;
 
-    res = await auth.requestTokenCredentials(res.credentials, "");
+      res = await auth.requestTemporaryCredentials('oob');
 
-//    print("user token: " + res.credentials.token);
-//    print("user token secret: " + res.credentials.tokenSecret);
+      final int code = await requestAuthenticate(res);
 
-    return Client(platform.signatureMethod, _clientCredentials, res.credentials);
+      res = await auth.requestTokenCredentials(res.credentials, "");
+
+      _credentials = res.credentials;
+    }
+
+    // print("user token: " + credentials!.token!);
+    // print("user token secret: " + credentials!.tokenSecret!);
+
+    return Client(platform.signatureMethod, _clientCredentials, credentials!);
   }
 
   /// Obtain a set of temporary credentials from the server.
@@ -61,10 +79,10 @@ class FluigConnect {
   /// If not callbackURI passed, authentication becomes PIN-based.
   Future<int> requestAuthenticate(AuthorizationResponse res) async {
     final encoding = Encoding.getByName("utf-8");
-    final body = Uri.encodeFull("login=" + _user.user + "&password=" + _user.password + "&oauth_token=" + res.credentials.token + "&oauth_callback=oob");
+    final body = Uri.encodeFull("login=" + _user.user + "&password=" + _user.password + "&oauth_token=" + res.credentials.token! + "&oauth_callback=oob");
 
-//    print("Requisitanto login to: " + _url + 'portal/api/rest/oauth/dologin');
-//    print("Body: " + body);
+    // print("Requisitanto login to: " + _url + 'portal/api/rest/oauth/dologin');
+    //  print("Body: " + body);
 
     Uri dologinURI = Uri.parse(_url + 'portal/api/rest/oauth/dologin');
 
@@ -74,8 +92,8 @@ class FluigConnect {
       body: body,
     );
 
-//    print('Resposta statusCode: ' + resLogin.statusCode.toString());
-//    print("Resposta body: " + resLogin.body);
+    //    print('Resposta statusCode: ' + resLogin.statusCode.toString());
+    //    print("Resposta body: " + resLogin.body);
 
     if (resLogin.statusCode != 200) {
       throw StateError(resLogin.body);

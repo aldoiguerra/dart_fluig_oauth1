@@ -9,12 +9,12 @@ import 'credentials.dart';
 /// A class describing Authorization Header.
 /// http://tools.ietf.org/html/rfc5849#section-3.5.1
 class AuthorizationHeader {
-  final SignatureMethod _signatureMethod;
-  final ClientCredentials _clientCredentials;
-  final Credentials _credentials;
-  final String _method;
-  final String _url;
-  final Map<String, String> _additionalParameters;
+  final SignatureMethod? _signatureMethod;
+  final ClientCredentials? _clientCredentials;
+  final Credentials? _credentials;
+  final String? _method;
+  final String? _url;
+  final Map<String, String>? _additionalParameters;
 
   // static final _uuid = new Uuid();
 
@@ -37,25 +37,25 @@ class AuthorizationHeader {
   /// (You can override too but I don't recommend.)
   @override
   String toString() {
-    final Map<String, String> params = <String, String>{};
+    final Map<String, String?> params = <String, String?>{};
 
     params['oauth_nonce'] = DateTime.now().millisecondsSinceEpoch.toString();
-    params['oauth_signature_method'] = _signatureMethod.name;
+    params['oauth_signature_method'] = _signatureMethod!.name;
     params['oauth_timestamp'] =
         (DateTime.now().millisecondsSinceEpoch / 1000).floor().toString();
-    params['oauth_consumer_key'] = _clientCredentials.token;
+    params['oauth_consumer_key'] = _clientCredentials!.token;
     params['oauth_version'] = '1.0';
     if (_credentials != null) {
-      params['oauth_token'] = _credentials.token;
+      params['oauth_token'] = _credentials!.token;
     }
-    params.addAll(_additionalParameters);
+    params.addAll(_additionalParameters!);
     if (!params.containsKey('oauth_signature')) {
-      params['oauth_signature'] = _createSignature(_method, _url, params);
+      params['oauth_signature'] = _createSignature(_method!, _url!, params);
     }
 
     final String authHeader = 'OAuth ' +
         params.keys.map((String k) {
-          return '$k="${Uri.encodeComponent(params[k])}"';
+          return '$k="${Uri.encodeComponent(params[k]!)}"';
         }).join(', ');
     return authHeader;
   }
@@ -63,7 +63,7 @@ class AuthorizationHeader {
   /// Create signature in ways referred from
   /// https://dev.twitter.com/docs/auth/creating-signature.
   String _createSignature(
-      String method, String url, Map<String, String> params) {
+      String method, String url, Map<String, String?> params) {
     // Referred from https://dev.twitter.com/docs/auth/creating-signature
     if (params.isEmpty) {
       throw ArgumentError('params is empty.');
@@ -77,8 +77,8 @@ class AuthorizationHeader {
     // 1. Percent encode every key and value
     //    that will be signed.
     final Map<String, String> encodedParams = <String, String>{};
-    params.forEach((String k, String v) {
-      encodedParams[Uri.encodeComponent(k)] = Uri.encodeComponent(v);
+    params.forEach((String k, String? v) {
+      encodedParams[Uri.encodeComponent(k)] = Uri.encodeComponent(v!);
     });
     uri.queryParameters.forEach((String k, String v) {
       encodedParams[Uri.encodeComponent(k)] = Uri.encodeComponent(v);
@@ -130,15 +130,15 @@ class AuthorizationHeader {
     // secret, followed by an ampersand character '&',
     // followed by the percent encoded token secret:
     final String consumerSecret =
-        Uri.encodeComponent(_clientCredentials.tokenSecret);
+        Uri.encodeComponent(_clientCredentials!.tokenSecret);
     final String tokenSecret = _credentials != null
-        ? Uri.encodeComponent(_credentials.tokenSecret)
+        ? Uri.encodeComponent(_credentials!.tokenSecret!)
         : '';
     final String signingKey = '$consumerSecret&$tokenSecret';
 
     //
     // Calculating the signature
     //
-    return _signatureMethod.sign(signingKey, base.toString());
+    return _signatureMethod!.sign(signingKey, base.toString());
   }
 }

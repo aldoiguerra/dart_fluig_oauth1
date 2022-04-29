@@ -13,3 +13,7 @@
 ## 1.1.0
 
 - changes to null safe
+
+## 1.2.0
+
+- migrate to null safe
