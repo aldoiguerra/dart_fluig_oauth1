@@ -17,3 +17,7 @@
 ## 1.2.0
 
 - migrate to null safe
+
+## 1.3.0
+
+- updated lib's version
