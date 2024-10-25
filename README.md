@@ -10,7 +10,7 @@ Add to `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  fluig_oauth1: ^1.2.0
+  fluig_oauth1: ^1.3.0
 ```
 
 Please use like below.
